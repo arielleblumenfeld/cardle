@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  --cardinal: #8c1515;
+  --cardinal-dark: #6f0f0f;
+  --cardinal-soft: #f4e3e0;
+  --cream: #f9f6ef;
+  --cream-2: #f1ebdd;
+  --sandstone: #d2c295;
+  --ink: #2e2d29;
+  --ink-2: #5f574f;
+  --ink-3: #8a8178;
+  --line: #e2dccd;
+
+  /* Tile states. Overridden by .high-contrast below. */
+  --tile-correct: #3f7d4c;
+  --tile-present: #c19a2b;
+  --tile-absent: #8a8580;
+  --tile-empty-border: #d9d2c1;
+  --tile-filled-border: #8a8178;
+}
+
+.high-contrast {
+  --tile-correct: #e3742b;
+  --tile-present: #4f97d6;
+}
+
+@theme inline {
+  --color-cardinal: var(--cardinal);
+  --color-cardinal-dark: var(--cardinal-dark);
+  --color-cardinal-soft: var(--cardinal-soft);
+  --color-cream: var(--cream);
+  --color-cream-2: var(--cream-2);
+  --color-sandstone: var(--sandstone);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-correct: var(--tile-correct);
+  --color-present: var(--tile-present);
+  --color-absent: var(--tile-absent);
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-sans: "Source Sans 3", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* Faint sandstone arcade pattern behind the board, a nod to the Main Quad. */
+.arcade-bg {
+  background-image:
+    radial-gradient(circle at 50% 100%, transparent 15px, color-mix(in srgb, var(--sandstone) 22%, transparent) 16px, transparent 17px);
+  background-size: 40px 28px;
+  background-position: center bottom;
+}
+
+/* ---------- Tiles ---------- */
+/* Tiles size to the board area (a size container), so the keyboard always fits. */
+.board-area { container-type: size; }
+.tile {
+  --tile-final: transparent;
+  width: var(--tile);
+  height: var(--tile);
+  font-size: calc(var(--tile) * .56);
+  perspective: 600px;
+}
+.tile-classic { --tile: min(15vw, 3.75rem, calc((100cqh - 2.5rem) / 6)); }
+.tile-mini { --tile: min(20vw, 4.5rem, calc((100cqh - 2.5rem) / 6)); }
+.tile-small { --tile: 2.5rem; }
+.tile-reveal {
+  animation: tile-flip 600ms ease-in-out both;
+}
+@keyframes tile-flip {
+  0%   { transform: rotateX(0); background: transparent; border-color: var(--tile-filled-border); color: var(--ink); }
+  49%  { transform: rotateX(-90deg); background: transparent; border-color: var(--tile-filled-border); color: var(--ink); }
+  50%  { transform: rotateX(-90deg); background: var(--tile-final); border-color: var(--tile-final); color: #fff; }
+  100% { transform: rotateX(0); background: var(--tile-final); border-color: var(--tile-final); color: #fff; }
+}
+.tile-pop { animation: tile-pop 120ms ease-out; }
+@keyframes tile-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.tile-bounce { animation: tile-bounce 700ms ease both; }
+@keyframes tile-bounce {
+  0%, 20% { transform: translateY(0); }
+  40% { transform: translateY(-28px); }
+  50% { transform: translateY(4px); }
+  60% { transform: translateY(-12px); }
+  80% { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+.row-shake { animation: row-shake 500ms ease; }
+@keyframes row-shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-7px); }
+  40%, 60% { transform: translateX(7px); }
+}
+.row-sink { animation: row-sink 900ms ease both; }
+@keyframes row-sink {
+  0% { transform: none; opacity: 1; }
+  30% { transform: translateY(3px) rotate(-1deg); }
+  60% { transform: translateY(3px) rotate(1deg); }
+  100% { transform: none; opacity: .85; }
+}
+
+/* ---------- Chrome ---------- */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-10px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes hint-in { from { opacity: 0; transform: translateY(-6px); max-height: 0; } to { opacity: 1; transform: none; max-height: 120px; } }
+.animate-fade { animation: fade-in .2s ease both; }
+.animate-rise { animation: rise-in .3s cubic-bezier(.2,.8,.2,1) both; }
+.animate-toast { animation: toast-in .25s cubic-bezier(.2,.8,.2,1) both; }
+.animate-hint { animation: hint-in .3s ease both; overflow: hidden; }
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
+}
